@@ -12,13 +12,13 @@ export default function LanguageSwitcher({ current }: { current: Locale }) {
   const rest = pathname.split("/").slice(2).join("/");
 
   return (
-    <div className="flex items-center gap-1 text-xs font-medium">
+    <div className="flex items-center gap-0.5 text-xs font-medium sm:gap-1">
       {locales.map((l) => (
         <Link
           key={l}
           href={`/${l}${rest ? `/${rest}` : ""}`}
           aria-current={l === current ? "true" : undefined}
-          className={`rounded px-2 py-1 ${
+          className={`rounded px-1.5 py-1 sm:px-2 ${
             l === current ? "bg-foreground text-background" : "text-muted hover:text-foreground"
           }`}
         >

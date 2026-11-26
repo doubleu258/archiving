@@ -36,6 +36,25 @@ body {
   color: var(--foreground);
 }
 
+/* 사이트 로고 */
+.hl-logo {
+  font-family: var(--font-archivo-narrow), "Archivo Narrow", "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  /* #111111 대신 글자색 변수 사용 → 다크 모드에서는 자동으로 밝은 색 */
+  color: var(--foreground);
+}
+
+/* 아주 좁은 폰(iPhone SE 등)에서는 메뉴와 겹치지 않게 살짝 작게 */
+@media (max-width: 359px) {
+  .hl-logo {
+    font-size: 14px;
+    letter-spacing: 0.02em;
+  }
+}
+
 :focus-visible {
   outline: 2px solid var(--foreground);
   outline-offset: 2px;

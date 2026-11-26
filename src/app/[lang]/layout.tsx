@@ -3,7 +3,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Archivo_Narrow, Geist, Geist_Mono } from "next/font/google";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getDictionary } from "@/dictionaries";
 import { hasLocale, locales } from "@/lib/i18n";
@@ -11,6 +11,8 @@ import "../globals.css";
 
 const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
 const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
+// 로고 전용 폰트 (.hl-logo 에서 사용)
+const archivoNarrow = Archivo_Narrow({ variable: "--font-archivo-narrow", subsets: ["latin"], weight: "700" });
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -32,16 +34,14 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const dict = getDictionary(lang);
 
   return (
-    <html lang={lang} className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang={lang} className={`${geistSans.variable} ${geistMono.variable} ${archivoNarrow.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col font-sans">
         <header className="sticky top-0 z-10 border-b border-line bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 whitespace-nowrap px-4 sm:px-6">
-            <Link href={`/${lang}`} aria-label={dict.siteName} className="text-sm font-semibold uppercase tracking-[0.2em]">
-              {/* 작은 화면에서는 짧은 로고 */}
-              <span className="sm:hidden" aria-hidden="true">R/A</span>
-              <span className="hidden sm:inline">{dict.siteName}</span>
+          <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 whitespace-nowrap px-3 min-[360px]:px-4 sm:px-6">
+            <Link href={`/${lang}`} className="hl-logo">
+              {dict.siteName}
             </Link>
-            <nav className="flex items-center gap-3 text-sm sm:gap-5">
+            <nav className="flex items-center gap-2.5 text-[13px] sm:gap-5 sm:text-sm">
               <Link href={`/${lang}/archive`} className="text-muted hover:text-foreground">
                 {dict.nav.archive}
               </Link>
