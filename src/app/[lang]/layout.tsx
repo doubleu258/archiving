@@ -1,18 +1,26 @@
-// 모든 페이지에 공통으로 들어가는 틀: 상단 메뉴 + 하단 문구
+// 모든 페이지에 공통으로 들어가는 틀 (일반 웹사이트의 index.html 역할)
+// 폰트 링크, 상단 헤더, 하단 푸터가 여기 있어요.
 
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { Archivo_Narrow, Geist, Geist_Mono } from "next/font/google";
+import { Archivo, IBM_Plex_Mono } from "next/font/google";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import { getDictionary } from "@/dictionaries";
 import { hasLocale, locales } from "@/lib/i18n";
 import "../globals.css";
 
-const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"] });
-const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"] });
-// 로고 전용 폰트 (.hl-logo 에서 사용)
-const archivoNarrow = Archivo_Narrow({ variable: "--font-archivo-narrow", subsets: ["latin"], weight: "700" });
+// Google Fonts: next/font가 빌드할 때 내려받아 사이트에 같이 올려요 (외부 요청 없음, 깜빡임 없음)
+const archivo = Archivo({
+  variable: "--font-archivo",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+const plexMono = IBM_Plex_Mono({
+  variable: "--font-plex-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
+});
 
 export function generateStaticParams() {
   return locales.map((lang) => ({ lang }));
@@ -34,29 +42,36 @@ export default async function RootLayout({ children, params }: LayoutProps<"/[la
   const dict = getDictionary(lang);
 
   return (
-    <html lang={lang} className={`${geistSans.variable} ${geistMono.variable} ${archivoNarrow.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col font-sans">
-        <header className="sticky top-0 z-10 border-b border-line bg-background/90 backdrop-blur">
-          <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-2 whitespace-nowrap px-3 min-[360px]:px-4 sm:px-6">
-            <Link href={`/${lang}`} className="hl-logo">
-              {dict.siteName}
+    <html lang={lang} className={`${archivo.variable} ${plexMono.variable} h-full`}>
+      <head>
+        {/* Pretendard (한글): Google Fonts에 없어서 CDN 링크로 불러와요 */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css"
+        />
+      </head>
+      <body className="flex min-h-full flex-col">
+        {/* 아주 좁은 폰(380px 미만)에서는 메뉴가 로고 아래 줄로 내려가요 */}
+        <header className="archive-header sticky top-0 z-10 flex-wrap gap-x-4 gap-y-2 whitespace-nowrap bg-page">
+          <Link href={`/${lang}`} className="hl-brand">
+            {dict.siteName}
+          </Link>
+          <nav className="flex items-baseline gap-4 max-[379px]:w-full max-[379px]:justify-between sm:gap-6">
+            <Link href={`/${lang}/archive`} className="archive-meta hover:text-primary">
+              {dict.nav.archive}
             </Link>
-            <nav className="flex items-center gap-2.5 text-[13px] sm:gap-5 sm:text-sm">
-              <Link href={`/${lang}/archive`} className="text-muted hover:text-foreground">
-                {dict.nav.archive}
-              </Link>
-              <Link href={`/${lang}/identify`} className="text-muted hover:text-foreground">
-                {dict.nav.identify}
-              </Link>
-              <LanguageSwitcher current={lang} />
-            </nav>
-          </div>
+            <Link href={`/${lang}/identify`} className="archive-meta hover:text-primary">
+              {dict.nav.identify}
+            </Link>
+            <LanguageSwitcher current={lang} />
+          </nav>
         </header>
 
-        <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6">{children}</main>
+        <main className="w-full flex-1">{children}</main>
 
-        <footer className="border-t border-line">
-          <p className="mx-auto max-w-6xl px-4 py-6 text-xs text-muted sm:px-6">{dict.footer}</p>
+        <footer className="flex flex-wrap justify-between gap-2 border-t border-line px-[20px] py-3">
+          <span className="archive-caption">{dict.siteName}</span>
+          <span className="archive-caption normal-case">{dict.footer}</span>
         </footer>
       </body>
     </html>

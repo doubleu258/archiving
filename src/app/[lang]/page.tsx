@@ -2,9 +2,12 @@
 
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ColumnHeader, SectionHeader } from "@/components/PageHeader";
 import { getDictionary } from "@/dictionaries";
 import { getBrands, yearRange } from "@/lib/archive";
 import { hasLocale } from "@/lib/i18n";
+
+const pad = (n: number) => String(n).padStart(2, "0");
 
 export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const { lang } = await params;
@@ -12,43 +15,47 @@ export default async function HomePage({ params }: PageProps<"/[lang]">) {
   const dict = getDictionary(lang);
   const brands = getBrands();
 
+  const sections = [
+    { href: `/${lang}/archive`, title: dict.home.browseTitle, desc: dict.home.browseDesc },
+    { href: `/${lang}/identify`, title: dict.home.identifyTitle, desc: dict.home.identifyDesc },
+  ];
+
   return (
-    <div className="space-y-16">
-      <section className="max-w-2xl space-y-4 pt-6">
-        <p className="font-mono text-xs uppercase tracking-widest text-muted">{dict.home.eyebrow}</p>
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-5xl">{dict.home.title}</h1>
-        <p className="text-base leading-relaxed text-muted">{dict.home.subtitle}</p>
+    <>
+      <section className="space-y-3 border-b border-line px-[20px] pb-10 pt-12">
+        <p className="archive-meta">{dict.home.eyebrow}</p>
+        <h1 className="archive-title">{dict.home.title}</h1>
+        <p className="archive-body max-w-[520px]">{dict.home.subtitle}</p>
       </section>
 
-      <section className="grid gap-4 sm:grid-cols-2">
-        <Link href={`/${lang}/archive`} className="group border border-line p-6 transition-colors hover:border-foreground">
-          <h2 className="text-lg font-medium">{dict.home.browseTitle} →</h2>
-          <p className="mt-2 text-sm text-muted">{dict.home.browseDesc}</p>
+      <SectionHeader label={dict.home.indexHeading} meta={pad(sections.length)} />
+      {sections.map((s, i) => (
+        <Link key={s.href} href={s.href} className="archive-row">
+          <span className="archive-index">{pad(i + 1)}</span>
+          <span className="flex min-w-0 flex-col gap-0.5 sm:flex-row sm:items-baseline sm:gap-4">
+            <span className="font-medium">{s.title}</span>
+            <span className="archive-body">{s.desc}</span>
+          </span>
+          <span className="archive-meta" aria-hidden="true">
+            →
+          </span>
         </Link>
-        <Link href={`/${lang}/identify`} className="group border border-line p-6 transition-colors hover:border-foreground">
-          <h2 className="text-lg font-medium">{dict.home.identifyTitle} →</h2>
-          <p className="mt-2 text-sm text-muted">{dict.home.identifyDesc}</p>
-        </Link>
-      </section>
+      ))}
 
-      <section className="space-y-4">
-        <h2 className="font-mono text-xs uppercase tracking-widest text-muted">{dict.home.brandsHeading}</h2>
-        <ul className="divide-y divide-line border-y border-line">
-          {brands.map((b) => {
-            const [from, to] = yearRange(b);
-            return (
-              <li key={b.slug}>
-                <Link href={`/${lang}/archive/${b.slug}`} className="flex items-baseline justify-between py-4 hover:opacity-70">
-                  <span className="text-xl font-medium">{b.name}</span>
-                  <span className="font-mono text-xs text-muted">
-                    {from}–{to} · {dict.archive.collectionsCount(b.collections.length)}
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </section>
-    </div>
+      <SectionHeader label={dict.home.brandsHeading} meta={pad(brands.length)} />
+      <ColumnHeader cols={[dict.archive.columns.no, dict.archive.columns.brand, dict.archive.columns.details]} />
+      {brands.map((b, i) => {
+        const [from, to] = yearRange(b);
+        return (
+          <Link key={b.slug} href={`/${lang}/archive/${b.slug}`} className="archive-row">
+            <span className="archive-index">{pad(i + 1)}</span>
+            <span className="font-medium">{b.name}</span>
+            <span className="archive-meta text-right">
+              {from}–{to} · {dict.archive.collectionsCount(b.collections.length)}
+            </span>
+          </Link>
+        );
+      })}
+    </>
   );
 }

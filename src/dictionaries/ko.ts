@@ -14,6 +14,7 @@ const ko: Dictionary = {
     identifyTitle: "피스 찾기",
     identifyDesc: "옷 사진을 올리면 가장 비슷한 런웨이 룩을 찾아드려요.",
     brandsHeading: "브랜드",
+    indexHeading: "목차",
   },
   archive: {
     title: "아카이브",
@@ -36,6 +37,10 @@ const ko: Dictionary = {
     sampleNotice:
       "사이트를 만들기 위한 샘플 데이터예요. 룩 개수, 날짜, 사진은 임시값이며 실제 컬렉션 자료로 교체될 예정입니다.",
     lines: { menswear: "남성복", womenswear: "여성복", mixed: "남성·여성" },
+    brand: "브랜드",
+    collection: "컬렉션",
+    filter: "필터",
+    columns: { no: "번호", year: "연도", brand: "브랜드", collection: "컬렉션", details: "상세" },
   },
   identify: {
     title: "피스 찾기",

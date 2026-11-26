@@ -13,6 +13,7 @@ const en = {
     identifyTitle: "Identify a piece",
     identifyDesc: "Upload a photo of a garment and get the closest runway matches.",
     brandsHeading: "Brands",
+    indexHeading: "Index",
   },
   archive: {
     title: "Archive",
@@ -35,6 +36,10 @@ const en = {
     sampleNotice:
       "This is sample data used to build the site. Look counts, dates and images are placeholders and will be replaced with real collection data.",
     lines: { menswear: "Menswear", womenswear: "Womenswear", mixed: "Men & Women" },
+    brand: "Brand",
+    collection: "Collection",
+    filter: "Filter",
+    columns: { no: "No.", year: "Year", brand: "Brand", collection: "Collection", details: "Details" },
   },
   identify: {
     title: "Identify a piece",

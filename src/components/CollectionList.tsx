@@ -5,76 +5,70 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import LookImage from "./LookImage";
 
-export type CollectionCard = {
+export type CollectionRow = {
   slug: string;
   year: number;
   season: string;
   title: string;
   code: string;
-  meta: string;
-  image?: string;
+  city: string;
+  looks: string;
 };
 
 type Props = {
   base: string;
-  items: CollectionCard[];
+  items: CollectionRow[];
   seasons: { code: string; name: string }[];
-  allLabel: string;
-  filterLabel: string;
-  emptyImageText: string;
+  labels: { all: string; filter: string; year: string; collection: string; details: string };
 };
 
-function List({ base, items, seasons, allLabel, filterLabel, emptyImageText, active }: Props & { active?: string }) {
+function List({ base, items, seasons, labels, active }: Props & { active?: string }) {
   const filtered = active ? items.filter((c) => c.season === active) : items;
-  const years = [...new Set(filtered.map((c) => c.year))].sort((a, b) => b - a);
 
   return (
     <>
-      <div className="flex flex-wrap gap-2" role="group" aria-label={filterLabel}>
-        {[{ code: undefined, name: allLabel }, ...seasons].map((s) => {
-          const isActive = s.code === active;
-          return (
+      {/* 시즌 필터 */}
+      <div className="flex flex-wrap items-baseline gap-2 border-b border-line px-[20px] py-3">
+        <span className="archive-meta mr-2">{labels.filter}</span>
+        <div className="flex flex-wrap gap-1.5" role="group" aria-label={labels.filter}>
+          {[{ code: undefined, name: labels.all }, ...seasons].map((s) => (
             <Link
               key={s.code ?? "all"}
               href={s.code ? `${base}?season=${s.code}` : base}
               scroll={false}
-              aria-current={isActive ? "true" : undefined}
-              className={`rounded-full border px-3 py-1 text-sm ${
-                isActive ? "border-foreground bg-foreground text-background" : "border-line text-muted hover:text-foreground"
-              }`}
+              aria-current={s.code === active ? "true" : undefined}
+              className="archive-tag"
             >
               {s.name}
             </Link>
-          );
-        })}
+          ))}
+        </div>
+        <span className="archive-meta ml-auto">{String(filtered.length).padStart(2, "0")}</span>
       </div>
 
-      <div className="divide-y divide-line border-t border-line">
-        {years.map((year) => (
-          <section key={year} className="grid gap-4 py-6 sm:grid-cols-[120px_1fr]">
-            <h2 className="font-mono text-2xl font-light">{year}</h2>
-            <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4">
-              {filtered
-                .filter((c) => c.year === year)
-                .map((c) => (
-                  <li key={c.slug}>
-                    <Link href={`${base}/${c.slug}`} className="group block space-y-2">
-                      <div className="transition-opacity group-hover:opacity-80">
-                        <LookImage src={c.image} alt={c.title} label={c.code} emptyText={emptyImageText} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium">{c.title}</p>
-                        <p className="text-xs text-muted">{c.meta}</p>
-                      </div>
-                    </Link>
-                  </li>
-                ))}
-            </ul>
-          </section>
-        ))}
+      {/* 열 이름 */}
+      <div className="archive-row hover:bg-transparent">
+        <span className="archive-meta">{labels.year}</span>
+        <span className="archive-meta">{labels.collection}</span>
+        <span className="archive-meta text-right">{labels.details}</span>
       </div>
+
+      {filtered.map((c, i) => {
+        // 같은 연도의 두 번째 줄부터는 연도를 흐리게 → 연도별 묶음이 눈에 들어와요
+        const firstOfYear = i === 0 || filtered[i - 1].year !== c.year;
+        return (
+          <Link key={c.slug} href={`${base}/${c.slug}`} className="archive-row">
+            <span className={`archive-index ${firstOfYear ? "text-primary" : "opacity-40"}`}>{c.year}</span>
+            <span className="font-medium">{c.title}</span>
+            <span className="archive-meta flex justify-end gap-3 text-right">
+              <span>{c.code}</span>
+              <span className="hidden sm:inline">{c.city}</span>
+              <span>{c.looks}</span>
+            </span>
+          </Link>
+        );
+      })}
     </>
   );
 }

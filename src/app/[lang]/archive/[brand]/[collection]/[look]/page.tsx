@@ -1,10 +1,11 @@
-// 룩 상세 페이지: 큰 사진 + 피스 정보 + 이전/다음 룩
+// 룩 상세 페이지: 큰 사진 + 사양 표 + 이전/다음 룩
 
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LookImage from "@/components/LookImage";
+import PageHeader from "@/components/PageHeader";
 import { getDictionary } from "@/dictionaries";
 import { collectionCode, collectionTitle, getBrand, getBrands, getCollection, getLook } from "@/lib/archive";
 import { hasLocale, locales } from "@/lib/i18n";
@@ -39,67 +40,90 @@ export default async function LookPage({ params }: Props) {
   const dict = getDictionary(lang);
 
   const base = `/${lang}/archive/${brand.slug}/${collection.slug}`;
+  const code = collectionCode(collection);
+  const num = String(look.number).padStart(2, "0");
   const prev = getLook(collection, look.number - 1);
   const next = getLook(collection, look.number + 1);
 
+  const specs: [string, React.ReactNode][] = [
+    [dict.archive.brand, brand.name],
+    [dict.archive.collection, <Link key="c" href={base} className="archive-link">{collectionTitle(collection, lang)}</Link>],
+    [dict.archive.city, collection.city],
+    [dict.archive.line, dict.archive.lines[collection.line]],
+    [
+      dict.archive.categories,
+      <span key="t" className="flex flex-wrap gap-1.5">
+        {look.categories.map((cat) => (
+          <span key={cat} className="archive-tag">
+            {dict.categories[cat]}
+          </span>
+        ))}
+      </span>,
+    ],
+  ];
+
   return (
-    <div className="space-y-8">
+    <>
       <Breadcrumbs
         items={[
           { label: dict.archive.title, href: `/${lang}/archive` },
           { label: brand.name, href: `/${lang}/archive/${brand.slug}` },
-          { label: collectionCode(collection), href: base },
+          { label: code, href: base },
           { label: `${dict.archive.look} ${look.number}` },
         ]}
       />
+      <PageHeader
+        title={`${dict.archive.look} ${num}`}
+        meta={`${code} · ${num} / ${String(collection.looks.length).padStart(2, "0")}`}
+      />
 
-      <div className="grid gap-8 md:grid-cols-[minmax(0,420px)_1fr]">
-        <LookImage
-          src={look.image}
-          alt={`${brand.name} ${collectionCode(collection)} ${dict.archive.look} ${look.number}`}
-          label={`${dict.archive.look.toUpperCase()} ${String(look.number).padStart(2, "0")}`}
-          emptyText={dict.archive.noImage}
-          priority
-        />
+      <div className="grid md:grid-cols-[minmax(0,440px)_1fr]">
+        <div className="border-b border-line p-[20px] md:border-b-0 md:border-r">
+          <LookImage
+            src={look.image}
+            alt={`${brand.name} ${code} ${dict.archive.look} ${look.number}`}
+            label={`${code} / ${num}`}
+            emptyText={dict.archive.noImage}
+            priority
+          />
+        </div>
 
-        <div className="space-y-6">
-          <header>
-            <p className="text-sm text-muted">
-              {brand.name} · {collectionTitle(collection, lang)} · {collection.city}
-            </p>
-            <h1 className="text-3xl font-semibold tracking-tight">
-              {dict.archive.look} {look.number}
-              <span className="ml-2 text-base font-normal text-muted">/ {collection.looks.length}</span>
-            </h1>
-          </header>
+        <div>
+          {look.description && (
+            <div className="border-b border-line px-[20px] py-4">
+              <p className="archive-body">{look.description[lang]}</p>
+            </div>
+          )}
 
-          {look.description && <p className="leading-relaxed">{look.description[lang]}</p>}
+          {/* 사양 표 */}
+          <dl className="m-0">
+            {specs.map(([k, v]) => (
+              <div key={k} className="archive-row grid-cols-[120px_1fr] hover:bg-transparent">
+                <dt className="archive-meta">{k}</dt>
+                <dd className="m-0">{v}</dd>
+              </div>
+            ))}
+          </dl>
 
-          <section className="space-y-2">
-            <h2 className="font-mono text-xs uppercase tracking-widest text-muted">{dict.archive.categories}</h2>
-            <ul className="flex flex-wrap gap-2">
-              {look.categories.map((cat) => (
-                <li key={cat} className="rounded-full border border-line px-3 py-1 text-sm">
-                  {dict.categories[cat]}
-                </li>
-              ))}
-            </ul>
-          </section>
-
-          <nav className="flex gap-2 pt-4">
+          {/* 이전 / 다음 */}
+          <nav className="grid grid-cols-2 border-b border-line">
             {prev ? (
-              <Link href={`${base}/${prev.number}`} className="border border-line px-4 py-2 text-sm hover:border-foreground">
-                ← {dict.archive.previous}
+              <Link href={`${base}/${prev.number}`} className="archive-meta border-r border-line px-[20px] py-3 hover:bg-surface hover:text-primary">
+                ← {dict.archive.previous} · {String(prev.number).padStart(2, "0")}
               </Link>
-            ) : null}
+            ) : (
+              <span className="border-r border-line" />
+            )}
             {next ? (
-              <Link href={`${base}/${next.number}`} className="border border-line px-4 py-2 text-sm hover:border-foreground">
-                {dict.archive.next} →
+              <Link href={`${base}/${next.number}`} className="archive-meta px-[20px] py-3 text-right hover:bg-surface hover:text-primary">
+                {String(next.number).padStart(2, "0")} · {dict.archive.next} →
               </Link>
-            ) : null}
+            ) : (
+              <span />
+            )}
           </nav>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import LookImage from "@/components/LookImage";
+import PageHeader from "@/components/PageHeader";
 import SampleNotice from "@/components/SampleNotice";
 import { getDictionary } from "@/dictionaries";
 import { collectionCode, collectionTitle, getBrand, getBrands, getCollection, seasonName } from "@/lib/archive";
@@ -33,72 +34,77 @@ export default async function CollectionPage({ params }: Props) {
   if (!brand || !collection) notFound();
   const dict = getDictionary(lang);
   const base = `/${lang}/archive/${brand.slug}/${collection.slug}`;
+  const code = collectionCode(collection);
 
-  const facts: [string, string][] = [
+  const facts: [string, React.ReactNode][] = [
+    [dict.archive.brand, brand.name],
     [dict.archive.season, seasonName(collection.season, lang)],
     [dict.archive.city, collection.city],
     [dict.archive.line, dict.archive.lines[collection.line]],
   ];
   if (collection.showDate) facts.push([dict.archive.showDate, collection.showDate]);
+  if (collection.sourceUrl) {
+    facts.push([
+      dict.archive.source,
+      <a key="src" href={collection.sourceUrl} target="_blank" rel="noreferrer" className="archive-link">
+        {new URL(collection.sourceUrl).hostname}
+      </a>,
+    ]);
+  }
 
   return (
-    <div className="space-y-8">
+    <>
       <Breadcrumbs
         items={[
           { label: dict.archive.title, href: `/${lang}/archive` },
           { label: brand.name, href: `/${lang}/archive/${brand.slug}` },
-          { label: collectionCode(collection) },
+          { label: code },
         ]}
       />
+      <PageHeader
+        title={`${brand.name} — ${collectionTitle(collection, lang)}`}
+        meta={`${code} · ${dict.archive.looksCount(collection.looks.length)}`}
+        description={collection.notes?.[lang]}
+      />
 
-      <header className="space-y-4">
-        <div>
-          <p className="text-sm text-muted">{brand.name}</p>
-          <h1 className="text-4xl font-semibold tracking-tight">{collectionTitle(collection, lang)}</h1>
-        </div>
-        <dl className="flex flex-wrap gap-x-8 gap-y-2 text-sm">
-          {facts.map(([k, v]) => (
-            <div key={k} className="flex gap-2">
-              <dt className="text-muted">{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-          {collection.sourceUrl && (
-            <div className="flex gap-2">
-              <dt className="text-muted">{dict.archive.source}</dt>
-              <dd>
-                <a href={collection.sourceUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">
-                  {new URL(collection.sourceUrl).hostname}
-                </a>
-              </dd>
-            </div>
-          )}
-        </dl>
-        {collection.notes && <p className="max-w-3xl leading-relaxed text-muted">{collection.notes[lang]}</p>}
-      </header>
+      {/* 쇼 정보: 1px 선으로 나뉜 칸 */}
+      <dl className="archive-grid m-0 grid-cols-2 border-l-0 border-t-0 sm:grid-cols-4 [&>*:nth-child(4n)]:sm:border-r-0">
+        {facts.map(([k, v]) => (
+          <div key={k} className="space-y-1 px-[20px] py-3">
+            <dt className="archive-meta">{k}</dt>
+            <dd className="m-0">{v}</dd>
+          </div>
+        ))}
+      </dl>
 
       {!collection.verified && <SampleNotice badge={dict.archive.sampleBadge} text={dict.archive.sampleNotice} />}
 
-      <ul className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 lg:grid-cols-4">
+      {/* 룩 목록 */}
+      <ul className="archive-grid m-0 mt-8 list-none grid-cols-2 border-l-0 p-0 sm:grid-cols-3 lg:grid-cols-6">
         {collection.looks.map((look, i) => (
           <li key={look.number}>
-            <Link href={`${base}/${look.number}`} className="group block space-y-2">
-              <div className="transition-opacity group-hover:opacity-80">
+            <Link href={`${base}/${look.number}`} className="group block hover:bg-surface">
+              <div className="p-3 transition-opacity group-hover:opacity-80">
                 <LookImage
                   src={look.image}
-                  alt={`${brand.name} ${collectionCode(collection)} ${dict.archive.look} ${look.number}`}
-                  label={`${dict.archive.look.toUpperCase()} ${String(look.number).padStart(2, "0")}`}
+                  alt={`${brand.name} ${code} ${dict.archive.look} ${look.number}`}
+                  label={`${code} / ${String(look.number).padStart(2, "0")}`}
                   emptyText={dict.archive.noImage}
-                  priority={i < 4}
+                  priority={i < 6}
                 />
               </div>
-              <p className="font-mono text-xs text-muted">
-                {dict.archive.look} {look.number}
-              </p>
+              <div className="flex items-baseline justify-between gap-2 border-t border-line px-3 py-2">
+                <span className="archive-index text-primary">
+                  {dict.archive.look} {String(look.number).padStart(2, "0")}
+                </span>
+                <span className="archive-caption truncate">
+                  {look.categories.map((c) => dict.categories[c]).join(" · ")}
+                </span>
+              </div>
             </Link>
           </li>
         ))}
       </ul>
-    </div>
+    </>
   );
 }
