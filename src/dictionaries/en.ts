@@ -1,0 +1,78 @@
+// 영어 문구. 사이트에 보이는 글자는 모두 여기(그리고 ko.ts)에서 관리해요.
+
+const en = {
+  siteName: "Runway Archive",
+  nav: { archive: "Archive", identify: "Identify" },
+  home: {
+    eyebrow: "Personal runway archive",
+    title: "Find where a piece came from.",
+    subtitle:
+      "Browse runway collections by brand, year and season, or photograph a garment you own to find the runway look it came from.",
+    browseTitle: "Browse the archive",
+    browseDesc: "Collections by brand, year and season, look by look.",
+    identifyTitle: "Identify a piece",
+    identifyDesc: "Upload a photo of a garment and get the closest runway matches.",
+    brandsHeading: "Brands",
+  },
+  archive: {
+    title: "Archive",
+    subtitle: "Choose a brand to see its collections.",
+    collectionsCount: (n: number) => `${n} collections`,
+    looksCount: (n: number) => `${n} looks`,
+    all: "All",
+    city: "City",
+    line: "Line",
+    season: "Season",
+    showDate: "Show date",
+    source: "Source",
+    look: "Look",
+    previous: "Previous",
+    next: "Next",
+    backTo: (name: string) => `Back to ${name}`,
+    categories: "Pieces in this look",
+    noImage: "No image yet",
+    sampleBadge: "Sample",
+    sampleNotice:
+      "This is sample data used to build the site. Look counts, dates and images are placeholders and will be replaced with real collection data.",
+    lines: { menswear: "Menswear", womenswear: "Womenswear", mixed: "Men & Women" },
+  },
+  identify: {
+    title: "Identify a piece",
+    subtitle: "Photograph a garment you own. We compare it against the archive and show the closest runway looks.",
+    garmentPhoto: "Garment photo",
+    garmentHint: "Lay it flat or hang it against a plain background. JPG, PNG or HEIC.",
+    labelPhoto: "Label photo (optional)",
+    labelHint: "The main label or care tag helps narrow down the era.",
+    choose: "Choose photo",
+    replace: "Replace",
+    remove: "Remove",
+    category: "What kind of piece is it?",
+    anyCategory: "Not sure",
+    search: "Find matches",
+    comingSoon:
+      "Matching is not live yet. It arrives in step 3, once the archive has real runway images to compare against.",
+    tipsTitle: "Tips for better matches",
+    tips: [
+      "Photograph the whole garment, front side, in daylight.",
+      "Use a plain wall or floor so the piece stands out.",
+      "Add a close-up of distinctive details: buttons, seams, hardware.",
+    ],
+  },
+  categories: {
+    outerwear: "Outerwear",
+    jacket: "Jacket",
+    shirt: "Shirt",
+    top: "Top",
+    knitwear: "Knitwear",
+    trousers: "Trousers",
+    denim: "Denim",
+    skirt: "Skirt",
+    dress: "Dress",
+    accessory: "Accessory",
+  },
+  footer: "Personal, non-commercial archive. Runway images belong to their respective owners.",
+  notFound: { title: "Page not found", back: "Go to the archive" },
+};
+
+export default en;
+export type Dictionary = typeof en;

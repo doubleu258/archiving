@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
+/* 색상 토큰: 흰 바탕 + 검정 글씨의 아카이브 느낌. 다크 모드도 지원 */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fafaf9;
+  --foreground: #111111;
+  --muted: #6b6b6b;
+  --line: #e2e2df;
+  --surface: #f0f0ed;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0e0e0e;
+    --foreground: #ececec;
+    --muted: #9a9a9a;
+    --line: #2a2a2a;
+    --surface: #1a1a1a;
+  }
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-surface: var(--surface);
+  /* 영문은 Geist, 한글은 Mac의 Apple SD Gothic Neo 등 시스템 폰트 */
+  --font-sans: var(--font-geist-sans), "Apple SD Gothic Neo", "Pretendard", "Noto Sans KR",
+    system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--foreground);
+  outline-offset: 2px;
 }
