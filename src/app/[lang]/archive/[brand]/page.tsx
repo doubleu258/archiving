@@ -7,7 +7,7 @@ import CollectionList from "@/components/CollectionList";
 import PageHeader from "@/components/PageHeader";
 import SampleNotice from "@/components/SampleNotice";
 import { getDictionary } from "@/dictionaries";
-import { collectionCode, collectionTitle, getBrand, getBrands, seasonName, yearRange } from "@/lib/archive";
+import { collectionCode, collectionTitle, getBrand, getBrands, placeName, seasonName, yearRange } from "@/lib/archive";
 import { hasLocale, locales } from "@/lib/i18n";
 import type { SeasonCode } from "@/lib/types";
 
@@ -32,7 +32,7 @@ export default async function BrandPage({ params }: Props) {
   const dict = getDictionary(lang);
 
   const seasons = [...new Set(brand.collections.map((c) => c.season))] as SeasonCode[];
-  const hasUnverified = brand.collections.some((c) => !c.verified);
+  const hasSample = brand.collections.some((c) => c.status === "sample");
   const [from, to] = yearRange(brand);
 
   return (
@@ -43,7 +43,7 @@ export default async function BrandPage({ params }: Props) {
         meta={`${from}–${to} · ${dict.archive.collectionsCount(brand.collections.length)}`}
         description={brand.description[lang]}
       />
-      {hasUnverified && <SampleNotice badge={dict.archive.sampleBadge} text={dict.archive.sampleNotice} />}
+      {hasSample && <SampleNotice badge={dict.archive.sampleBadge} text={dict.archive.sampleNotice} />}
 
       <CollectionList
         base={`/${lang}/archive/${brand.slug}`}
@@ -61,8 +61,18 @@ export default async function BrandPage({ params }: Props) {
           season: c.season,
           title: collectionTitle(c, lang),
           code: collectionCode(c),
-          city: c.city,
-          looks: dict.archive.looksCount(c.looks.length),
+          city: placeName(c, dict.archive.online),
+          count: c.looks.length
+            ? dict.archive.photosCount(c.looks.length)
+            : c.lookCount
+              ? dict.archive.looksCount(c.lookCount)
+              : "—",
+          badge:
+            c.status === "sample"
+              ? dict.archive.sampleBadge
+              : c.status === "unconfirmed"
+                ? dict.archive.unconfirmedBadge
+                : undefined,
         }))}
       />
     </>

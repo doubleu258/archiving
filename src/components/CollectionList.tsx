@@ -13,7 +13,10 @@ export type CollectionRow = {
   title: string;
   code: string;
   city: string;
-  looks: string;
+  /** 룩 수 / 사진 수 표시 */
+  count: string;
+  /** "샘플" / "확인 중" 표시 (확인된 시즌은 없음) */
+  badge?: string;
 };
 
 type Props = {
@@ -60,11 +63,14 @@ function List({ base, items, seasons, labels, active }: Props & { active?: strin
         return (
           <Link key={c.slug} href={`${base}/${c.slug}`} className="archive-row">
             <span className={`archive-index ${firstOfYear ? "text-primary" : "opacity-40"}`}>{c.year}</span>
-            <span className="font-medium">{c.title}</span>
+            <span className="flex min-w-0 items-baseline gap-2">
+              <span className={`font-medium ${c.badge ? "text-muted" : ""}`}>{c.title}</span>
+              {c.badge && <span className="archive-tag px-1 py-0 text-[10px]">{c.badge}</span>}
+            </span>
             <span className="archive-meta flex justify-end gap-3 text-right">
               <span>{c.code}</span>
               <span className="hidden sm:inline">{c.city}</span>
-              <span>{c.looks}</span>
+              <span className="hidden sm:inline">{c.count}</span>
             </span>
           </Link>
         );

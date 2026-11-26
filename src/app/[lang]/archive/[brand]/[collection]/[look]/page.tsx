@@ -7,19 +7,21 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import LookImage from "@/components/LookImage";
 import PageHeader from "@/components/PageHeader";
 import { getDictionary } from "@/dictionaries";
-import { collectionCode, collectionTitle, getBrand, getBrands, getCollection, getLook } from "@/lib/archive";
+import { adjacentLooks, collectionCode, collectionTitle, getBrand, getBrands, getCollection, getLook, placeName } from "@/lib/archive";
 import { hasLocale, locales } from "@/lib/i18n";
 
 type Props = PageProps<"/[lang]/archive/[brand]/[collection]/[look]">;
 
 export function generateStaticParams() {
-  return locales.flatMap((lang) =>
+  const params = locales.flatMap((lang) =>
     getBrands().flatMap((b) =>
       b.collections.flatMap((c) =>
         c.looks.map((l) => ({ lang, brand: b.slug, collection: c.slug, look: String(l.number) })),
       ),
     ),
   );
+  // 사진이 하나도 없을 때도 빌드가 되도록 자리표시 하나 (열면 404)
+  return params.length > 0 ? params : [{ lang: "en", brand: "helmut-lang", collection: "fw-1998", look: "1" }];
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -42,14 +44,15 @@ export default async function LookPage({ params }: Props) {
   const base = `/${lang}/archive/${brand.slug}/${collection.slug}`;
   const code = collectionCode(collection);
   const num = String(look.number).padStart(2, "0");
-  const prev = getLook(collection, look.number - 1);
-  const next = getLook(collection, look.number + 1);
+  const [prev, next] = adjacentLooks(collection, look);
 
   const specs: [string, React.ReactNode][] = [
     [dict.archive.brand, brand.name],
     [dict.archive.collection, <Link key="c" href={base} className="archive-link">{collectionTitle(collection, lang)}</Link>],
-    [dict.archive.city, collection.city],
-    [dict.archive.line, dict.archive.lines[collection.line]],
+    [dict.archive.city, placeName(collection, dict.archive.online)],
+  ];
+  if (collection.line) specs.push([dict.archive.line, dict.archive.lines[collection.line]]);
+  if (look.categories.length > 0) specs.push(
     [
       dict.archive.categories,
       <span key="t" className="flex flex-wrap gap-1.5">
@@ -60,7 +63,7 @@ export default async function LookPage({ params }: Props) {
         ))}
       </span>,
     ],
-  ];
+  );
 
   return (
     <>

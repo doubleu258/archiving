@@ -34,8 +34,16 @@ const ko: Dictionary = {
     categories: "이 룩의 피스",
     noImage: "아직 사진 없음",
     sampleBadge: "샘플",
-    sampleNotice:
-      "사이트를 만들기 위한 샘플 데이터예요. 룩 개수, 날짜, 사진은 임시값이며 실제 컬렉션 자료로 교체될 예정입니다.",
+    sampleNotice: "‘샘플’로 표시된 시즌은 사이트 구조를 위한 임시 데이터예요. 아직 조사하지 않았어요.",
+    unconfirmedBadge: "확인 중",
+    unconfirmedNotice: "실제로 있는 시즌이지만, 세부 정보를 아직 출처로 확인하지 못했어요.",
+    online: "온라인",
+    looksKnown: (n: number) => `총 ${n}룩 발표`,
+    photosCount: (n: number) => `사진 ${n}장`,
+    sources: "출처",
+    noPhotosTitle: "아직 사진이 없어요",
+    noPhotosHow: (folder: string) =>
+      `이 시즌의 런웨이 사진을 내 컴퓨터의 archive-photos/${folder}/ 폴더에 저장한 뒤 npm run import-photos 를 실행하세요. 사진은 내 컴퓨터에만 있고 GitHub에는 올라가지 않아요.`,
     lines: { menswear: "남성복", womenswear: "여성복", mixed: "남성·여성" },
     brand: "브랜드",
     collection: "컬렉션",

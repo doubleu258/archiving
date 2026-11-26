@@ -34,7 +34,16 @@ const en = {
     noImage: "No image yet",
     sampleBadge: "Sample",
     sampleNotice:
-      "This is sample data used to build the site. Look counts, dates and images are placeholders and will be replaced with real collection data.",
+      "Seasons marked Sample are placeholders used to build the site. Their details have not been researched yet.",
+    unconfirmedBadge: "Unconfirmed",
+    unconfirmedNotice: "This season is real, but its details have not been confirmed against a source yet.",
+    online: "Online",
+    looksKnown: (n: number) => `${n} looks shown`,
+    photosCount: (n: number) => `${n} photos`,
+    sources: "Sources",
+    noPhotosTitle: "No photos added yet",
+    noPhotosHow: (folder: string) =>
+      `Save runway photos for this season in archive-photos/${folder}/ on your computer, then run npm run import-photos. Photos stay on your computer and are never uploaded to GitHub.`,
     lines: { menswear: "Menswear", womenswear: "Womenswear", mixed: "Men & Women" },
     brand: "Brand",
     collection: "Collection",

@@ -39,3 +39,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# runway photos: personal use only, never uploaded to GitHub
+/archive-photos/
+/public/looks/
+/src/data/photos.local.json
